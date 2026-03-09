@@ -1,32 +1,37 @@
-import random
+class RockPaperScissors:
+    def __init__(self):
+        self.player_score = 0
+        self.computer_score = 0
 
-def player(prev_play, opponent_history=None):
-    if opponent_history is None:
-        opponent_history = []
-    
-    if prev_play != "":
-        opponent_history.append(prev_play)
+    def play_round(self, player_choice):
+        import random
+        choices = ['rock', 'paper', 'scissors']
+        computer_choice = random.choice(choices)
+        print(f"Computer chose: {computer_choice}")
 
-    beat = {"R": "P", "P": "S", "S": "R"}
+        if player_choice == computer_choice:
+            print("It's a tie!")
+        elif (player_choice == 'rock' and computer_choice == 'scissors') or \
+             (player_choice == 'paper' and computer_choice == 'rock') or \
+             (player_choice == 'scissors' and computer_choice == 'paper'):
+            print("You win!")
+            self.player_score += 1
+        else:
+            print("You lose!")
+            self.computer_score += 1
 
-    if len(opponent_history) < 5:
-        return random.choice(["R", "P", "S"])
+    def show_scores(self):
+        print(f"Player Score: {self.player_score}, Computer Score: {self.computer_score}")
 
-    pattern = "".join(opponent_history[-4:])
-    counts = {"R": 0, "P": 0, "S": 0}
 
-    for i in range(len(opponent_history) - 4):
-        if i + 4 < len(opponent_history) and "".join(opponent_history[i:i+4]) == pattern:
-            next_move = opponent_history[i+4]
-            counts[next_move] += 1
-
-    predicted = max(counts, key=counts.get)
-
-    if counts[predicted] > 0:
-        return beat[predicted]
-
-    if opponent_history:  # Check if not empty
-        common = max(set(opponent_history), key=opponent_history.count)
-        return beat[common]
-    
-    return random.choice(["R", "P", "S"])
+if __name__ == '__main__':
+    game = RockPaperScissors()
+    while True:
+        player_choice = input("Enter rock, paper, or scissors (or 'quit' to stop): ").lower()
+        if player_choice == 'quit':
+            break
+        elif player_choice not in ['rock', 'paper', 'scissors']:
+            print("Invalid choice, try again.")
+            continue
+        game.play_round(player_choice)
+        game.show_scores()
