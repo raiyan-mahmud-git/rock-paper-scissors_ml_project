@@ -54,5 +54,5 @@ If there is not enough data, the AI chooses a move randomly.
 
 How to store and analyze historical data Pattern recognition techniques Designing simple AI strategies Implementing decision-making algorithms in Python Author 
 
-Student project completed as part of the freeCodeCamp Machine Learning with Python Certification.
+# Student project completed as part of the freeCodeCamp Machine Learning with Python Certification.
 
