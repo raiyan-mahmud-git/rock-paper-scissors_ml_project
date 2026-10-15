@@ -34,8 +34,8 @@ Moves: rock (r), paper (p), scissors (s), lizard (l), spock (sp)
 You need Python 3.10 or newer (tested on 3.11, 3.12 and 3.13). Nothing to install:
 
 ```bash
-git clone <your-repo-url>
-cd rock-paper-scissors
+git clone https://github.com/raiyan-mahmud-git/rock-paper-scissors_ml_project.git
+cd rock-paper-scissors_ml_project
 python -m rps
 ```
 
