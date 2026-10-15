@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rock-paper-scissors"
+version = "2.0.0"
+description = "A terminal Rock Paper Scissors (and Lizard-Spock) game with an AI that learns your habits."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+rps = "rps.cli:main"
+
+[tool.setuptools]
+packages = ["rps"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
