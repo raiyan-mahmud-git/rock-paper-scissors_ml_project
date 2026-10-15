@@ -115,14 +115,14 @@ class Session:
         self.difficulty = difficulty
         self._match_number = 0
 
-    # -- public API ----------------------------------------------------------
+    # public API
 
     def run(self) -> None:
         self._print_welcome()
         try:
             while True:
                 result = self._play_match()
-                if result is None:  # player quit (or input ended)
+                if result is None:  # player quit
                     break
                 if not self._ask_play_again():
                     break
@@ -130,7 +130,7 @@ class Session:
             self._save()
         self._print_goodbye()
 
-    # -- one match -----------------------------------------------------------
+    # one match
 
     def _play_match(self) -> Optional[bool]:
         """Play a match. Returns ``True``/``False`` for win/loss, ``None`` on quit."""
@@ -230,7 +230,7 @@ class Session:
                 return False
             self.print(self.style("Please answer 'y' or 'n'.", "yellow"))
 
-    # -- banners and persistence ---------------------------------------------
+    # banners and persistence
 
     def _print_welcome(self) -> None:
         s = self.style
