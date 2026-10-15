@@ -29,7 +29,7 @@ class TestRules:
             assert ruleset.decide(move, move) is Outcome.TIE
 
     def test_extended_is_balanced(self):
-        # Every move beats exactly two others and loses to exactly two others.
+        # Every move beats two others and loses to two others.
         for move in EXTENDED.moves:
             assert len(EXTENDED.beats[move]) == 2
             assert len(EXTENDED.counters(move)) == 2
