@@ -36,7 +36,7 @@ class Strategy(ABC):
     def observe(self, player_move: Move) -> None:
         """Record the player's move after a round. Default: ignore it."""
 
-    # -- helpers shared by the concrete strategies ---------------------------
+    # helpers shared by the concrete strategies
 
     def _random_move(self) -> Move:
         return self.rng.choice(self.ruleset.moves)
