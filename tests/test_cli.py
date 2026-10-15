@@ -116,7 +116,7 @@ class TestSession:
         assert "Commands" in text
         assert "No rounds played yet" in text
         assert "win rate 100%" in text
-        assert session.stats.rounds_played == 1  # commands aren't rounds
+        assert session.stats.rounds_played == 1 
 
     def test_eof_ends_the_game_cleanly(self):
         text, _ = play([], [])
