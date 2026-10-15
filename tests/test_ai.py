@@ -83,7 +83,7 @@ class TestMarkovStrategy:
         cycle = [Move.ROCK, Move.PAPER, Move.SCISSORS]
         for i in range(30):
             ai.observe(cycle[i % 3])
-        # History ends ...rock, paper, scissors, so the player plays rock next.
+    
         assert ai.predict() is Move.ROCK
         assert all(ai.choose() is Move.PAPER for _ in range(20))
 
@@ -97,13 +97,13 @@ class TestMarkovStrategy:
             ai.observe(player)
             if i >= 20 and beats(computer, player):
                 wins += 1
-        assert wins == 100  # perfect once it has seen the pattern
+        assert wins == 100 
 
     def test_falls_back_to_frequency_for_unseen_sequences(self):
         ai = MarkovStrategy(CLASSIC, rng(), order=2, epsilon=0.0)
         ai.observe(Move.ROCK)
         ai.observe(Move.ROCK)
-        # Sequence (rock, rock) has never been followed by anything yet.
+        
         assert ai.predict() is Move.ROCK
 
     def test_epsilon_one_is_fully_random(self):
@@ -136,7 +136,7 @@ class TestCreateStrategy:
             create_strategy("impossible", CLASSIC)
 
     def test_ai_cannot_see_the_current_move(self):
-        # choose() takes no arguments, so peeking is impossible by construction.
+        
         ai = create_strategy("hard", CLASSIC, rng())
         with pytest.raises(TypeError):
             ai.choose(Move.ROCK)
