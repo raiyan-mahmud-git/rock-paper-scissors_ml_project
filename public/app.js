@@ -176,7 +176,7 @@ rulesModal.addEventListener('click', (e) => {
 });
 
 async function sendPlayRequest(body) {
-  const endpoints = ['/api/play', '/api/index/play', '/play'];
+  const endpoints = ['/play', '/api/play'];
   let lastError = null;
   for (const endpoint of endpoints) {
     try {
@@ -188,20 +188,19 @@ async function sendPlayRequest(body) {
       if (res.ok) {
         return await res.json();
       }
-      if (res.status !== 404) {
-        const text = await res.text();
-        throw new Error(`Server returned HTTP ${res.status}: ${text}`);
-      }
+      const text = await res.text();
+      console.warn(`Endpoint ${endpoint} returned ${res.status}: ${text}`);
+      lastError = new Error(`HTTP ${res.status}: ${text}`);
     } catch (e) {
+      console.warn(`Endpoint ${endpoint} failed:`, e);
       lastError = e;
-      if (e.message.includes('Server returned HTTP')) throw e;
     }
   }
   throw lastError || new Error('Could not reach game server on any endpoint');
 }
 
 async function sendResetRequest(body) {
-  const endpoints = ['/api/reset', '/api/index/reset', '/reset'];
+  const endpoints = ['/reset', '/api/reset'];
   for (const endpoint of endpoints) {
     try {
       const res = await fetch(endpoint, {
