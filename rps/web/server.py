@@ -25,7 +25,7 @@ from rps.game import (
 )
 from rps.stats import Stats
 
-STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(
     title="Rock Paper Scissors AI Arena",
@@ -47,6 +47,8 @@ class PlayRequest(BaseModel):
     move: str
     difficulty: str = "hard"
     ruleset: str = "classic"
+    history: Optional[List[str]] = None
+    stats: Optional[Dict[str, Any]] = None
 
 
 class ResetRequest(BaseModel):
@@ -85,7 +87,13 @@ _SESSIONS: Dict[str, GameSession] = {}
 SESSION_TTL_SECONDS = 3600 * 4  # 4 hours per inactive session
 
 
-def _get_or_create_session(session_id: Optional[str], ruleset: str, difficulty: str) -> tuple[str, GameSession]:
+def _get_or_create_session(
+    session_id: Optional[str],
+    ruleset: str,
+    difficulty: str,
+    history: Optional[List[str]] = None,
+    client_stats: Optional[Dict[str, Any]] = None,
+) -> tuple[str, GameSession]:
     now = time.time()
     # Periodic sweep of expired sessions
     if len(_SESSIONS) > 500:
@@ -93,9 +101,28 @@ def _get_or_create_session(session_id: Optional[str], ruleset: str, difficulty: 
         for sid in expired:
             _SESSIONS.pop(sid, None)
 
-    if not session_id or session_id not in _SESSIONS:
+    is_new = False
+    if not session_id:
         session_id = str(uuid.uuid4())
+        is_new = True
+    elif session_id not in _SESSIONS:
+        is_new = True
+
+    if is_new:
         session = GameSession(ruleset_name=ruleset, difficulty=difficulty)
+        if client_stats:
+            try:
+                session.stats = Stats.from_dict(client_stats)
+            except Exception:
+                pass
+        if history:
+            for past_m in history[-30:]:
+                try:
+                    pm = Move(past_m.lower())
+                    if pm in session.ruleset.moves:
+                        session.strategy.observe(pm)
+                except ValueError:
+                    pass
         _SESSIONS[session_id] = session
     else:
         session = _SESSIONS[session_id]
@@ -122,7 +149,9 @@ def health_check() -> Dict[str, str]:
 
 @app.post("/api/play")
 def play_round(req: PlayRequest) -> Dict[str, Any]:
-    session_id, session = _get_or_create_session(req.session_id, req.ruleset, req.difficulty)
+    session_id, session = _get_or_create_session(
+        req.session_id, req.ruleset, req.difficulty, req.history, req.stats
+    )
 
     # Validate player move
     try:

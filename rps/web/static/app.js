@@ -10,6 +10,8 @@ const EMOJIS = {
 
 // State
 let sessionId = localStorage.getItem('rps_session_id') || null;
+let playerHistory = JSON.parse(localStorage.getItem('rps_history') || '[]');
+let savedStats = JSON.parse(localStorage.getItem('rps_stats') || 'null');
 let currentMode = 'classic';
 let currentDiff = 'hard';
 let isSoundEnabled = true;
@@ -189,7 +191,11 @@ resetBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     sessionId = data.session_id;
+    playerHistory = [];
+    savedStats = null;
     localStorage.setItem('rps_session_id', sessionId);
+    localStorage.removeItem('rps_history');
+    localStorage.removeItem('rps_stats');
     updateStats(data.stats);
     historyList.innerHTML = '<div class="empty-history">Scores reset. Make your first throw!</div>';
     resetArenaUI();
@@ -252,6 +258,8 @@ async function playMove(playerMove) {
         move: playerMove,
         difficulty: currentDiff,
         ruleset: currentMode,
+        history: playerHistory.slice(-30),
+        stats: savedStats,
       }),
     });
 
@@ -261,7 +269,12 @@ async function playMove(playerMove) {
 
     const data = await response.json();
     sessionId = data.session_id;
+    playerHistory.push(playerMove);
+    if (playerHistory.length > 50) playerHistory.shift();
+    savedStats = data.stats;
     localStorage.setItem('rps_session_id', sessionId);
+    localStorage.setItem('rps_history', JSON.stringify(playerHistory));
+    localStorage.setItem('rps_stats', JSON.stringify(savedStats));
 
     // Brief delay for dramatic suspense
     await new Promise((r) => setTimeout(r, 400));
@@ -367,5 +380,9 @@ function addHistoryItem(data) {
   historyList.insertBefore(item, historyList.firstChild);
 }
 
-// Initial habits render
-renderHabits({}, 0);
+// Initial habits and stats render
+if (savedStats) {
+  updateStats(savedStats);
+} else {
+  renderHabits({}, 0);
+}
