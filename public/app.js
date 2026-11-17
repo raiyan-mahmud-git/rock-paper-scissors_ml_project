@@ -175,21 +175,56 @@ rulesModal.addEventListener('click', (e) => {
   if (e.target === rulesModal) rulesModal.classList.add('hidden');
 });
 
+async function sendPlayRequest(body) {
+  const endpoints = ['/api/play', '/api/index/play', '/play'];
+  let lastError = null;
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      if (res.status !== 404) {
+        const text = await res.text();
+        throw new Error(`Server returned HTTP ${res.status}: ${text}`);
+      }
+    } catch (e) {
+      lastError = e;
+      if (e.message.includes('Server returned HTTP')) throw e;
+    }
+  }
+  throw lastError || new Error('Could not reach game server on any endpoint');
+}
+
+async function sendResetRequest(body) {
+  const endpoints = ['/api/reset', '/api/index/reset', '/reset'];
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {}
+  }
+  throw new Error('Reset failed on all endpoints');
+}
+
 // Setup Reset
 resetBtn.addEventListener('click', async () => {
   if (!confirm('Reset your scores and AI session?')) return;
   sounds.click();
   try {
-    const res = await fetch('/api/reset', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sessionId,
-        difficulty: currentDiff,
-        ruleset: currentMode,
-      }),
+    const data = await sendResetRequest({
+      session_id: sessionId,
+      difficulty: currentDiff,
+      ruleset: currentMode,
     });
-    const data = await res.json();
     sessionId = data.session_id;
     playerHistory = [];
     savedStats = null;
@@ -250,24 +285,15 @@ async function playMove(playerMove) {
   outcomeBadge.innerText = '3... 2... 1...';
 
   try {
-    const response = await fetch('/api/play', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sessionId,
-        move: playerMove,
-        difficulty: currentDiff,
-        ruleset: currentMode,
-        history: playerHistory.slice(-30),
-        stats: savedStats,
-      }),
+    const data = await sendPlayRequest({
+      session_id: sessionId,
+      move: playerMove,
+      difficulty: currentDiff,
+      ruleset: currentMode,
+      history: playerHistory.slice(-30),
+      stats: savedStats,
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
     sessionId = data.session_id;
     playerHistory.push(playerMove);
     if (playerHistory.length > 50) playerHistory.shift();

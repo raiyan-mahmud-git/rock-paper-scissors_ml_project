@@ -233,9 +233,10 @@ def reset_game(req: ResetRequest) -> Dict[str, Any]:
     }
 
 
-# Include routes both with and without /api prefix
+# Include routes across all possible Vercel and local paths
 app.include_router(api_router)
 app.include_router(api_router, prefix="/api")
+app.include_router(api_router, prefix="/api/index")
 
 
 def _find_file(filename: str) -> Optional[Path]:
