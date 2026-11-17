@@ -7,11 +7,11 @@ import uuid
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from rps.ai import DIFFICULTIES, Strategy, create_strategy
 from rps.game import (
@@ -26,6 +26,7 @@ from rps.game import (
 from rps.stats import Stats
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+PUBLIC_DIR = Path(__file__).resolve().parent.parent.parent / "public"
 
 app = FastAPI(
     title="Rock Paper Scissors AI Arena",
@@ -82,7 +83,6 @@ class GameSession:
             self.strategy = create_strategy(self.difficulty, self.ruleset)
 
 
-# In-memory store for visitor sessions with automatic TTL cleanup
 _SESSIONS: Dict[str, GameSession] = {}
 SESSION_TTL_SECONDS = 3600 * 4  # 4 hours per inactive session
 
@@ -95,7 +95,6 @@ def _get_or_create_session(
     client_stats: Optional[Dict[str, Any]] = None,
 ) -> tuple[str, GameSession]:
     now = time.time()
-    # Periodic sweep of expired sessions
     if len(_SESSIONS) > 500:
         expired = [sid for sid, sess in _SESSIONS.items() if now - sess.last_active > SESSION_TTL_SECONDS]
         for sid in expired:
@@ -142,18 +141,21 @@ def _describe_result(player: Move, computer: Move, outcome: Outcome) -> str:
     return f"{computer.label} {verb} {player.label}. AI wins!"
 
 
-@app.get("/api/health")
+# API Router supporting both /api/path and /path
+api_router = APIRouter()
+
+
+@api_router.get("/health")
 def health_check() -> Dict[str, str]:
     return {"status": "ok", "version": "2.0.0"}
 
 
-@app.post("/api/play")
+@api_router.post("/play")
 def play_round(req: PlayRequest) -> Dict[str, Any]:
     session_id, session = _get_or_create_session(
         req.session_id, req.ruleset, req.difficulty, req.history, req.stats
     )
 
-    # Validate player move
     try:
         player_move = Move(req.move.lower())
     except ValueError:
@@ -165,22 +167,12 @@ def play_round(req: PlayRequest) -> Dict[str, Any]:
             detail=f"{player_move.label} is not permitted in {session.ruleset_name} mode",
         )
 
-    # 1. AI chooses WITHOUT peeking
     computer_move = session.strategy.choose()
-
-    # 2. Decide outcome
     outcome = session.ruleset.decide(player_move, computer_move)
-
-    # 3. AI observes the player's move to adapt
     session.strategy.observe(player_move)
-
-    # 4. Record statistics
     session.stats.record_round(player_move, outcome)
-
-    # 5. Build friendly commentary
     commentary = _describe_result(player_move, computer_move, outcome)
 
-    # Record in history
     round_record = {
         "round": session.stats.rounds_played,
         "player_move": player_move.value,
@@ -192,7 +184,6 @@ def play_round(req: PlayRequest) -> Dict[str, Any]:
     if len(session.history) > 50:
         session.history.pop(0)
 
-    # AI strategy insight for UI
     ai_status = "Observing your patterns"
     if session.difficulty == "hard":
         ai_status = f"Markov Order 2 ({len(session.history)} moves analyzed)"
@@ -221,10 +212,10 @@ def play_round(req: PlayRequest) -> Dict[str, Any]:
     }
 
 
-@app.post("/api/reset")
+@api_router.post("/reset")
 def reset_game(req: ResetRequest) -> Dict[str, Any]:
     session_id = req.session_id or str(uuid.uuid4())
-    session = GameSession(ruleset_name=req.ruleset, difficulty=difficulty) if 'difficulty' in locals() else GameSession(ruleset_name=req.ruleset, difficulty=req.difficulty)
+    session = GameSession(ruleset_name=req.ruleset, difficulty=req.difficulty)
     _SESSIONS[session_id] = session
     return {
         "session_id": session_id,
@@ -242,14 +233,49 @@ def reset_game(req: ResetRequest) -> Dict[str, Any]:
     }
 
 
-# Serve static web frontend
-if STATIC_DIR.exists():
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Include routes both with and without /api prefix
+app.include_router(api_router)
+app.include_router(api_router, prefix="/api")
+
+
+def _find_file(filename: str) -> Optional[Path]:
+    for base in [PUBLIC_DIR, STATIC_DIR]:
+        f = base / filename
+        if f.exists():
+            return f
+    return None
 
 
 @app.get("/")
+@app.get("/api")
+@app.get("/api/")
+@app.get("/api/index")
 def serve_index() -> Any:
-    index_path = STATIC_DIR / "index.html"
-    if index_path.exists():
-        return FileResponse(index_path)
-    return HTMLResponse("<h2>Rock Paper Scissors API running. Frontend static files pending.</h2>")
+    idx = _find_file("index.html")
+    if idx:
+        return FileResponse(idx)
+    return HTMLResponse("<h2>Rock Paper Scissors AI Arena is running!</h2>")
+
+
+@app.get("/style.css")
+@app.get("/static/style.css")
+def serve_css() -> Any:
+    css = _find_file("style.css")
+    if css:
+        return FileResponse(css, media_type="text/css")
+    raise HTTPException(status_code=404, detail="style.css not found")
+
+
+@app.get("/app.js")
+@app.get("/static/app.js")
+def serve_js() -> Any:
+    js = _find_file("app.js")
+    if js:
+        return FileResponse(js, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
+
+
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+if PUBLIC_DIR.exists():
+    app.mount("/public", StaticFiles(directory=PUBLIC_DIR), name="public")
