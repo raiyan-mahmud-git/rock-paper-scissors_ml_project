@@ -18,6 +18,24 @@ Moves: rock (r), paper (p), scissors (s), lizard (l), spock (sp)
   Score: You 1 - 0 Computer
 ```
 
+## Web UI & Online Play
+
+You can play in your browser with animated showdowns, live habit tracking, and sound effects:
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+Then visit **http://localhost:8000** in your browser.
+
+### Free 1-Click Hosting
+
+You can host this live for visitors to play anytime:
+- **Render.com**: Connect your GitHub repository. Select **Web Service**, runtime **Python 3**, and set start command to:
+  `uvicorn rps.web.server:app --host 0.0.0.0 --port $PORT`
+  (or use the included `render.yaml`).
+- **Railway / Hugging Face Spaces**: Compatible directly with the included `Dockerfile` or `requirements.txt`.
+
 ## Features
 
 - **Two rule sets**: classic (rock, paper, scissors) and extended (adds lizard and spock).
