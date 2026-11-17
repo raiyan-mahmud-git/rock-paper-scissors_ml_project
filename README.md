@@ -18,23 +18,18 @@ Moves: rock (r), paper (p), scissors (s), lizard (l), spock (sp)
   Score: You 1 - 0 Computer
 ```
 
-## Web UI & Online Play
+## Live Demo & Web UI
 
-You can play in your browser with animated showdowns, live habit tracking, and sound effects:
+Play live online right in your browser against the Markov AI:
+👉 **[https://rock-paper-scissors-ten-gilt.vercel.app](https://rock-paper-scissors-ten-gilt.vercel.app)**
+
+Or run it locally on your computer:
 
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 Then visit **http://localhost:8000** in your browser.
-
-### Free 1-Click Hosting
-
-You can host this live for visitors to play anytime:
-- **Render.com**: Connect your GitHub repository. Select **Web Service**, runtime **Python 3**, and set start command to:
-  `uvicorn rps.web.server:app --host 0.0.0.0 --port $PORT`
-  (or use the included `render.yaml`).
-- **Railway / Hugging Face Spaces**: Compatible directly with the included `Dockerfile` or `requirements.txt`.
 
 ## Features
 
