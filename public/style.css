@@ -30,7 +30,6 @@ body {
   padding: 24px 16px;
 }
 
-/* Background ambient glow */
 .stars-bg {
   position: fixed;
   top: 0;
@@ -54,7 +53,6 @@ body {
   gap: 20px;
 }
 
-/* Card base */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -63,7 +61,6 @@ body {
   backdrop-filter: blur(8px);
 }
 
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -132,7 +129,6 @@ body {
   border-color: var(--loss-red);
 }
 
-/* Controls Panel */
 .controls-panel {
   display: flex;
   justify-content: space-between;
@@ -188,7 +184,6 @@ body {
   box-shadow: 0 4px 14px rgba(121, 82, 255, 0.4);
 }
 
-/* Battle Arena */
 .battle-arena {
   padding: 30px 20px;
   display: grid;
@@ -343,7 +338,6 @@ body {
   100% { transform: scale(0.9); opacity: 0.6; }
 }
 
-/* Move Buttons Section */
 .moves-section {
   width: 100%;
 }
@@ -410,7 +404,6 @@ body {
   display: none !important;
 }
 
-/* Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -521,7 +514,6 @@ body {
   text-align: right;
 }
 
-/* History */
 .history-card {
   padding: 20px;
 }
@@ -572,7 +564,6 @@ body {
   padding: 16px 0;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -643,7 +634,6 @@ body {
   padding: 10px 0;
 }
 
-/* Responsive */
 @media (max-width: 700px) {
   .battle-arena {
     grid-template-columns: 1fr;

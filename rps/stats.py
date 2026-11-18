@@ -54,8 +54,6 @@ class Stats:
     best_streak: int = 0
     move_counts: Dict[str, int] = field(default_factory=dict)
 
-    # derived values
-
     @property
     def rounds_played(self) -> int:
         return self.rounds_won + self.rounds_lost + self.rounds_tied
@@ -75,11 +73,8 @@ class Stats:
         """``(move, times_played)`` for the most-played move, if any."""
         if not self.move_counts:
             return None
-        # Sorting first makes ties resolve alphabetically
         name = max(sorted(self.move_counts), key=lambda k: self.move_counts[k])
         return name, self.move_counts[name]
-
-    # ecording
 
     def record_round(self, move: Move, outcome: Outcome) -> None:
         self.move_counts[move.value] = self.move_counts.get(move.value, 0) + 1
@@ -98,8 +93,6 @@ class Stats:
             self.matches_won += 1
         else:
             self.matches_lost += 1
-
-    # persistence
 
     def to_dict(self) -> Dict[str, Any]:
         data: Dict[str, Any] = {"version": FORMAT_VERSION}
@@ -139,7 +132,7 @@ class Stats:
             return cls()
         try:
             return cls.from_dict(json.loads(raw))
-        except ValueError:  # includes json.JSONDecodeError
+        except ValueError:
             try:
                 os.replace(path, path.with_name(path.name + ".corrupt"))
             except OSError:

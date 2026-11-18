@@ -84,7 +84,7 @@ class GameSession:
 
 
 _SESSIONS: Dict[str, GameSession] = {}
-SESSION_TTL_SECONDS = 3600 * 4  # 4 hours per inactive session
+SESSION_TTL_SECONDS = 3600 * 4
 
 
 def _get_or_create_session(
@@ -141,7 +141,6 @@ def _describe_result(player: Move, computer: Move, outcome: Outcome) -> str:
     return f"{computer.label} {verb} {player.label}. AI wins!"
 
 
-# API Router supporting both /api/path and /path
 api_router = APIRouter()
 
 
@@ -233,7 +232,6 @@ def reset_game(req: ResetRequest) -> Dict[str, Any]:
     }
 
 
-# Include routes across all possible Vercel and local paths
 app.include_router(api_router)
 app.include_router(api_router, prefix="/api")
 app.include_router(api_router, prefix="/api/index")

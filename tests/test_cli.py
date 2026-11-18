@@ -85,7 +85,7 @@ class TestSession:
 
     def test_play_again_starts_a_new_match(self):
         text, session = play(
-            ["r", "", "r", "no"],  # blank answer to "play again" means yes
+            ["r", "", "r", "no"],
             [Move.SCISSORS, Move.SCISSORS],
             target_wins=1,
         )
@@ -98,8 +98,6 @@ class TestSession:
             [Move.SCISSORS] * 6,
             target_wins=2,
         )
-        # Match 1 (2 rounds), "maybe" is rejected, "r" is rejected, "yes" starts
-        # match 2 (2 rounds), then "n" ends the session.
         assert text.count("Please answer 'y' or 'n'") == 2
         assert "Match 2" in text and "Match 3" not in text
         assert session.stats.matches_won == 2
@@ -143,7 +141,7 @@ class TestSession:
 
     def test_stats_are_saved_even_if_input_ends_abruptly(self, tmp_path):
         path = tmp_path / "stats.json"
-        play(["rock"], [Move.SCISSORS], save_path=path)  # then EOF
+        play(["rock"], [Move.SCISSORS], save_path=path)
         assert Stats.load(path).rounds_won == 1
 
     def test_save_failure_is_reported_not_raised(self, tmp_path):
@@ -254,7 +252,7 @@ class TestMain:
     def test_no_color_when_not_a_tty(self, monkeypatch):
         monkeypatch.delenv("NO_COLOR", raising=False)
         args = cli.build_parser().parse_args([])
-        assert cli._use_color(args) is False  # pytest captures stdout
+        assert cli._use_color(args) is False
 
     def test_no_color_env_var(self, monkeypatch):
         monkeypatch.setenv("NO_COLOR", "1")

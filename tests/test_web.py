@@ -75,14 +75,12 @@ def test_extended_move_in_classic_rejected(client):
 
 
 def test_reset_endpoint(client):
-    # Play once
     play_resp = client.post(
         "/api/play",
         json={"move": "rock", "difficulty": "hard", "ruleset": "classic"},
     )
     sid = play_resp.json()["session_id"]
 
-    # Reset
     reset_resp = client.post(
         "/api/reset",
         json={"session_id": sid, "difficulty": "hard", "ruleset": "classic"},

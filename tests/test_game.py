@@ -29,7 +29,6 @@ class TestRules:
             assert ruleset.decide(move, move) is Outcome.TIE
 
     def test_extended_is_balanced(self):
-        # Every move beats two others and loses to two others.
         for move in EXTENDED.moves:
             assert len(EXTENDED.beats[move]) == 2
             assert len(EXTENDED.counters(move)) == 2
@@ -123,7 +122,7 @@ class TestMatch:
         assert match.target_wins == 2
         match.play(Move.ROCK, Move.SCISSORS)
         assert not match.is_over
-        match.play(Move.ROCK, Move.ROCK)  # ties don't count
+        match.play(Move.ROCK, Move.ROCK)
         assert not match.is_over
         match.play(Move.ROCK, Move.SCISSORS)
         assert match.is_over
@@ -152,4 +151,4 @@ class TestMatch:
             match.play(Move.LIZARD, Move.ROCK)
         with pytest.raises(ValueError):
             match.play(Move.ROCK, Move.SPOCK)
-        assert match.rounds == []  # a rejected move leaves no trace
+        assert match.rounds == []

@@ -32,7 +32,6 @@ class Outcome(Enum):
     TIE = "tie"
 
 
-# Short aliases accepted when typing a move.
 SHORTCUTS: Dict[Move, str] = {
     Move.ROCK: "r",
     Move.PAPER: "p",
@@ -41,7 +40,6 @@ SHORTCUTS: Dict[Move, str] = {
     Move.SPOCK: "sp",
 }
 
-# (winner, loser) -> the verb used to describe the win.
 VERBS: Dict[Tuple[Move, Move], str] = {
     (Move.ROCK, Move.SCISSORS): "crushes",
     (Move.ROCK, Move.LIZARD): "crushes",

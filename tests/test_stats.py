@@ -28,7 +28,7 @@ class TestRecording:
         stats = Stats()
         for outcome in (Outcome.WIN, Outcome.WIN, Outcome.TIE, Outcome.WIN):
             stats.record_round(Move.ROCK, outcome)
-        assert stats.current_streak == 3  # a tie doesn't break the streak
+        assert stats.current_streak == 3
         assert stats.best_streak == 3
         stats.record_round(Move.ROCK, Outcome.LOSE)
         assert stats.current_streak == 0

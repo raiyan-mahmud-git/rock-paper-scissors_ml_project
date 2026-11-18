@@ -115,22 +115,18 @@ class Session:
         self.difficulty = difficulty
         self._match_number = 0
 
-    # public API
-
     def run(self) -> None:
         self._print_welcome()
         try:
             while True:
                 result = self._play_match()
-                if result is None:  # player quit
+                if result is None:
                     break
                 if not self._ask_play_again():
                     break
         finally:
             self._save()
         self._print_goodbye()
-
-    # one match
 
     def _play_match(self) -> Optional[bool]:
         """Play a match. Returns ``True``/``False`` for win/loss, ``None`` on quit."""
@@ -150,7 +146,7 @@ class Session:
             if move is None:
                 return None
 
-            computer = self.strategy.choose()  # decided before seeing `move`
+            computer = self.strategy.choose()
             result = match.play(move, computer)
             self.strategy.observe(move)
             for record in (self.stats, self.session_stats):
@@ -229,8 +225,6 @@ class Session:
             if token in NO_WORDS:
                 return False
             self.print(self.style("Please answer 'y' or 'n'.", "yellow"))
-
-    # banners and persistence
 
     def _print_welcome(self) -> None:
         s = self.style

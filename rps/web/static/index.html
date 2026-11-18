@@ -13,7 +13,6 @@
   <div class="stars-bg"></div>
 
   <div class="app-container">
-    <!-- Header -->
     <header class="header">
       <div class="logo-area">
         <span class="game-badge">MACHINE LEARNING POWERED</span>
@@ -30,7 +29,6 @@
       </div>
     </header>
 
-    <!-- Controls Bar -->
     <section class="controls-panel card">
       <div class="control-group">
         <label class="control-label">GAME MODE</label>
@@ -50,7 +48,6 @@
       </div>
     </section>
 
-    <!-- Battle Arena -->
     <main class="battle-arena card">
       <div class="fighter-side player-side">
         <div class="fighter-tag">YOU</div>
@@ -79,7 +76,6 @@
       </div>
     </main>
 
-    <!-- Move Picker Actions -->
     <section class="moves-section">
       <div class="moves-grid" id="movesGrid">
         <button class="move-btn" data-move="rock" title="Press [R]">
@@ -100,7 +96,6 @@
           <span class="key-hint">S</span>
         </button>
 
-        <!-- Extended mode moves -->
         <button class="move-btn extended-move hidden" data-move="lizard" title="Press [L]">
           <span class="move-icon">🦎</span>
           <span class="move-name">Lizard</span>
@@ -115,9 +110,7 @@
       </div>
     </section>
 
-    <!-- Stats & Analytics Dashboard -->
     <section class="dashboard-grid">
-      <!-- Scores Overview -->
       <div class="card stat-card">
         <h3 class="card-title">Scoreboard</h3>
         <div class="stats-numbers">
@@ -150,17 +143,14 @@
         </div>
       </div>
 
-      <!-- Move Habit Breakdown -->
       <div class="card stat-card">
         <h3 class="card-title">Your Play Habits (What AI Tracks)</h3>
         <p class="habit-desc">The AI watches these counts and sequence patterns to counter your next move.</p>
         <div class="habit-bars" id="habitBars">
-          <!-- Populated by JS -->
         </div>
       </div>
     </section>
 
-    <!-- Recent History -->
     <section class="card history-card">
       <h3 class="card-title">Round History</h3>
       <div class="history-list" id="historyList">
@@ -173,7 +163,6 @@
     </footer>
   </div>
 
-  <!-- Rules Modal -->
   <div class="modal-overlay hidden" id="rulesModal">
     <div class="modal card">
       <div class="modal-header">
